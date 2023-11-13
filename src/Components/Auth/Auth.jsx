@@ -24,11 +24,11 @@ const Auth = () => {
       isOpen={isOpen}
       onChange={onChange}
     >
-      <div className='flex justify-center items-center w-full h-full relative'>
+      <div className='relative overflow-hidden max-w-full h-[31.5rem]'>
 
         {/* Sign in */}
 
-        <div className='w-1/2 p-10 bg-white h-[31.5rem] relative'>
+        <div className={`w-1/2 absolute left-0 top-0 z-[2] p-10 bg-white h-full transition-all ease-in-out duration-700 ${toggleClass ? 'transform translate-x-[100%]' : ''}`}>
 
           {/* heading */}
 
@@ -111,7 +111,7 @@ const Auth = () => {
 
         {/* Sign up */}
 
-        <div className='w-1/2 p-10 bg-white relative'>
+        <div className={`w-1/2 p-10 bg-white h-full absolute top-0 transition-all ease-in-out duration-700 ${toggleClass ? 'transform translate-x-[100%] opacity-100 z-[5] animation-show' : 'opacity-0 z-[1] left-0'}`}>
 
           {/* heading */}
 
@@ -203,19 +203,53 @@ const Auth = () => {
 
         {/* color box */}
 
-        <div className={`h-full w-1/2 p-10 absolute top-0 flex flex-col items-center justify-center ${toggleClass ? 'left-[50%]' : 'left-0'} `} style={{ background: 'linear-gradient(90deg, rgba(240, 117, 60, 1) 0%, rgba(255, 59, 0, 1) 100%)' }}>
+        <div className={`h-full w-1/2 absolute top-0 left-[50%] overflow-hidden z-[100] ${toggleClass ? 'transform translate-x-[-100%] duration-700' : 'transform translate-x-[0] duration-700'}`} >
 
-          {/* heading */}
+          <div className={`relative bg-no-repeat bg-cover left-[-100%] h-full w-[200%] ${toggleClass ? 'transform translate-x-[50%]' : 'transform translate-x-0 '}`} style={{ background: 'linear-gradient(90deg, rgb(245 94 24) 0%, rgba(255, 59, 0, 1) 100%)' }}>
 
-          <h1 className='font-bold text-white text-center text-4xl tracking-wider'>Welcome Back!</h1>
+            {/* left portion - Sign in */}
 
-          <div className='flex flex-col gap-y-2 items-center justify-center my-4'>
+            <div className={`h-full w-1/2 p-10 absolute top-0 flex flex-col items-center justify-center transform ${toggleClass ? 'translate-x-0' : 'translate-x-[-20%]'}`}>
 
-            <p className='font-light text-white text-lg text-center'>To keep connected with us please login with your personal info</p>
+              {/* heading */}
+
+              <h1 className='font-bold text-white text-center text-4xl tracking-wider'>Welcome Back!</h1>
+
+              {/* tagline */}
+              <div className='flex flex-col gap-y-2 items-center justify-center my-4'>
+
+                <p className='font-light text-white text-lg text-center'>To keep connected with us please login with your personal info</p>
+
+              </div>
+
+              {/* Sign in button */}
+
+              <button type='button' className='border border-white bg-transparent text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]' onClick={toggleClassHandler}>Sign in</button>
+
+            </div>
+
+            {/* right portion - Sign up */}
+
+            <div className={`h-full w-1/2 p-10 absolute top-0 flex flex-col items-center justify-center transform ${toggleClass ? 'translate-x-[20%]' : 'translate-x-[0%]'} right-0`}>
+
+              {/* heading */}
+
+              <h1 className='font-bold text-white text-center text-4xl tracking-wider'>Hello Friend!</h1>
+
+              {/* tagline */}
+              <div className='flex flex-col gap-y-2 items-center justify-center my-4'>
+
+                <p className='font-light text-white text-lg text-center'>Enter your personal details and start journey with us</p>
+
+              </div>
+
+              {/* Sign in button */}
+
+              <button type='button' className='border border-white bg-transparent text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]' onClick={toggleClassHandler}>Sign up</button>
+
+            </div>
 
           </div>
-
-          <button type='button' className='border border-white bg-transparent text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]' onClick={toggleClassHandler}>Sign in</button>
 
         </div>
 
