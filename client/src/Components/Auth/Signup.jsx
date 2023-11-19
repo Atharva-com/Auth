@@ -6,13 +6,15 @@ import useAuthModal from '../../helpers/UseAuthModal'
 const Signup = ({ toggleClass }) => {
 
     const [SignUp, setSignUp] = useState({ username: '', email: '', password: '' })
-    const {onClose} = useAuthModal()
+    const [Error, setError] = useState(false)
+    const [Loading, setLoading] = useState(false)
+    const { onClose } = useAuthModal()
 
     const handleInputChange = (e) => {
         setSignUp({ ...SignUp, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         if (SignUp.username.length < 3) {
             alert('Username must be at least 3 characters long')
         } else if (SignUp.password.length < 4) {
@@ -22,8 +24,29 @@ const Signup = ({ toggleClass }) => {
         } else {
 
             e.preventDefault()
-            setSignUp({ username: '', email: '', password: '' })
-            console.log(SignUp)
+
+            try {
+
+                setLoading(true)
+                setError(false)
+                const response = await fetch('http://localhost:8000/api/auth/signup', SignUp)
+                const data = await response.json()
+                setLoading(false)
+                if (data.success === false) {
+                    setError(true)
+                    return
+                }
+                
+                console.log(data)
+                setSignUp({ username: '', email: '', password: '' })
+                console.log(SignUp)
+
+            } catch (error) {
+
+                setLoading(true)
+                setError(true)
+
+            }
 
         }
     }
@@ -111,7 +134,9 @@ const Signup = ({ toggleClass }) => {
 
                     {/* Sign up button */}
 
-                    <button type='submit' className='border border-[#FF4B2B] bg-[#FF4B2B] text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]'>Sign up</button>
+                    <button disabled={Loading} type='submit' className='border border-[#FF4B2B] bg-[#FF4B2B] text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]'>{Loading ? '' : 'Sign up'}</button>
+
+                    {Error && <p className='text-red-500 pb-4'>Something went wrong !</p>}
 
                 </form>
 
