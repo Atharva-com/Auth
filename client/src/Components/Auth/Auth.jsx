@@ -28,7 +28,7 @@ const Auth = () => {
 
         <SignIn toggleClass={toggleClass} />
 
-        <Signup toggleClass={toggleClass} />
+        <Signup toggleClass={toggleClass} toggleClassHandler={toggleClassHandler} />
 
         {/* color box */}
 

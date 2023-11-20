@@ -3,19 +3,46 @@ import { FaFacebookF } from 'react-icons/fa'
 import { FaGoogle } from 'react-icons/fa'
 import { IoMdClose } from 'react-icons/io'
 import useAuthModal from '../../helpers/UseAuthModal'
+import { useNavigate } from 'react-router-dom'
+import { signInStart, signInFailure, signInSuccess } from '../../redux/user/userSlice'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 const SignIn = ({toggleClass}) => {
 
+    const dispatch = useDispatch()
     const [SignIn, setSignIn] = useState({email: '', password:''})
+    const { Loading, Error } = useSelector(state => state.user)
     const {onClose} = useAuthModal()
+    const navigate = useNavigate()
 
     const handleInputChange = (e) => {
         setSignIn({...SignIn, [e.target.name]: e.target.value})
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setSignIn({email: '', password:''})
-        console.log(SignIn)
+        try {
+
+            dispatch(signInStart())
+            const response = await fetch('http://localhost:8000/api/auth/signin', SignIn)
+            const data = await response.json()
+            
+            if (data.success === false) {
+                dispatch(signInFailure(data))
+                return
+            }
+            dispatch(signInSuccess(data))
+            onClose()
+            navigate('/')
+            console.log(data)
+            setSignIn({ email: '', password: '' })
+            console.log(SignIn)
+
+        } catch (error) {
+
+            dispatch(signInFailure(error))
+
+        }
     }
 
     return (
@@ -92,7 +119,9 @@ const SignIn = ({toggleClass}) => {
 
                     {/* Sign in button */}
 
-                    <button type='button' className='border border-[#FF4B2B] bg-[#FF4B2B] text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]'>Sign in</button>
+                    <button type='button' className='border border-[#FF4B2B] bg-[#FF4B2B] text-[#FFFFFF] text-lg font-semibold py-[12px] px-[45px] tracking-[1px] uppercase transition-transform duration-100 ease-in active:transform active:scale-95 focus:outline-none rounded-[20px]'>{Loading ? '' : 'Sign in'}</button>
+
+                    {Error && <p className='text-red-500 pb-4'>{Error.message || 'Something went wrong !'}</p>}
 
                 </form>
 

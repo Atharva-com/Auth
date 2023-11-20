@@ -3,7 +3,7 @@ import { FaFacebookF } from 'react-icons/fa'
 import { FaGoogle } from 'react-icons/fa'
 import { IoMdClose } from 'react-icons/io'
 import useAuthModal from '../../helpers/UseAuthModal'
-const Signup = ({ toggleClass }) => {
+const Signup = ({ toggleClass, toggleClassHandler }) => {
 
     const [SignUp, setSignUp] = useState({ username: '', email: '', password: '' })
     const [Error, setError] = useState(false)
@@ -39,6 +39,7 @@ const Signup = ({ toggleClass }) => {
                 
                 console.log(data)
                 setSignUp({ username: '', email: '', password: '' })
+                toggleClassHandler()
                 console.log(SignUp)
 
             } catch (error) {
