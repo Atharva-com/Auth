@@ -43,10 +43,10 @@ const signin = async (req, res, next) => {
         if (!validPassword) {
             res.status(400).json({ success: false, message: "Invalid Credentials." })
         }
-        const { password: pass, ...rest } = validUser._doc;
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+        const { password: hashedPassword, ...rest } = validUser._doc;
         const expiryDate = new Date(Number(new Date()) + 1 * 24 * 60 * 60 * 1000);
-        res.cookie("access_token", token, { httpOnly: true, expires: expiryDate }).status(200).json({ success: true, message: "Logged in Successfully.", user: rest });
+        res.cookie("access_token", token, { httpOnly: true, expires: expiryDate }).status(200).json({ success: true, message: "Logged in Successfully.", user: rest, token: token });
         
     } catch (error) {
 
@@ -55,4 +55,33 @@ const signin = async (req, res, next) => {
     }
  }
 
-module.exports = { signup, signin };
+const google = async (req, res, next) => { 
+
+    try {
+
+        const user = await User.findOne({ email: req.body.email });
+        if(user){
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            const { password: hashedPassword, ...rest } = user._doc;
+            const expiryDate = new Date(Number(new Date()) + 1 * 24 * 60 * 60 * 1000);
+            res.cookie("access_token", token, { httpOnly: true, expires: expiryDate }).status(200).json({ success: true, message: "Logged in Successfully.", user: rest, token: token });
+        } else {
+            const generatedPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+            const newUser = new User({ username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-8) , email: req.body.email, password: hashedPassword, profilePicture: req.body.photo });
+
+            await newUser.save();
+            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+            const { password: hashedPassword2 , ...rest } = newUser._doc;
+            const expiryDate = new Date(Number(new Date()) + 1 * 24 * 60 * 60 * 1000);
+            res.cookie("access_token", token, { httpOnly: true, expires: expiryDate }).status(200).json({ success: true, message: "Logged in Successfully.", user: rest, token: token });
+        }
+        
+    } catch (error) {
+        next(error);
+    }
+
+ }
+
+module.exports = { signup, signin, google };

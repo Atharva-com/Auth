@@ -2,7 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose');
 require('dotenv').config();
 const authRoutes = require('./routes/auth.js');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+var cors = require('cors')
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('MongoDB Connected!');
@@ -14,18 +14,9 @@ const app = express();
 app.use(express.json());
 
 app.listen(8000, () => {
-    console.log('Port Listening on port no. 3000!');
+    console.log('Port Listening on port no. 8000!');
 })
-
-// Define the proxy route
-// app.use(
-//     '/api', // Replace '/api' with your API endpoint
-//     createProxyMiddleware({
-//         target: 'http://localhost:8000', // Replace with your proxy server URL
-//         changeOrigin: true,
-//     })
-// );
-
+app.use(cors())
 app.use("/api/auth", authRoutes);
 
 app.use((err, req, res, next) => {
