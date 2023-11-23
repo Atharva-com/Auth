@@ -34,7 +34,7 @@ const SignIn = ({ toggleClass }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if(!validEmail(SignIn.email)) {
+        if (!validEmail(SignIn.email)) {
             setInvalidEmail(true)
             return
         }
@@ -50,6 +50,8 @@ const SignIn = ({ toggleClass }) => {
 
             })
             const data = await response.json()
+            // Store the token in local storage
+            localStorage.setItem('access_Token', data.token);
             console.log(data)
             if (data.success === false) {
                 dispatch(signInFailure(data))
@@ -147,7 +149,7 @@ const SignIn = ({ toggleClass }) => {
 
                         </div>
 
-                    </div> 
+                    </div>
 
                     {/* Sign in Password */}
 

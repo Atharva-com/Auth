@@ -2,22 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../../Firebase/Firebase';
+import { useDispatch } from 'react-redux';
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from '../../redux/user/userSlice';
+import { RotatingLines } from 'react-loader-spinner';
 const Profile = () => {
-
-  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const fileRef = React.useRef();
   const [image, setImage] = useState(undefined)
   const [imagePercent, setImagePercent] = useState(0)
   const [imageError, setImageError] = useState(false)
   const [formData, setFormData] = useState({})
-  console.log(imagePercent)
-  console.log(imageError)
-  console.log(formData)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
+
   useEffect(() => {
     if (image) {
       handleFileUpload(image)
     }
   }, [image])
+
+  // Upload image to firebase storage
 
   const handleFileUpload = async (image) => {
     const storage = getStorage(app);
@@ -42,10 +50,49 @@ const Profile = () => {
     )
   }
 
+  // On input change
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
+
+  // On form submit
+
+  const handleSubmit = async (e) => { 
+    const token = localStorage.getItem('access_token')
+    e.preventDefault()
+    const dataWithToken = {
+      ...formData, // Add form data to the data
+      token: token, // Add token to the data
+    };
+
+    try {
+
+      // Dispatch update user start
+      dispatch(updateUserStart());
+      const res = await fetch(`http://localhost:8000/api/user/update/${currentUser._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataWithToken),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true)
+    } catch (error) {
+      dispatch(updateUserFailure(error));
+    }
+    
+   }
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-4'>
+      <form onSubmit={handleSubmit} method='POST' className='flex flex-col gap-4'>
 
         {/* Image upload input */}
 
@@ -73,6 +120,7 @@ const Profile = () => {
           id='username'
           placeholder='Username'
           className='bg-slate-100 rounded-lg p-3'
+          onChange={handleInputChange}
         />
         
         {/* Email Input */}
@@ -82,6 +130,7 @@ const Profile = () => {
           id='email'
           placeholder='Email'
           className='bg-slate-100 rounded-lg p-3'
+          onChange={handleInputChange}
         />
 
         {/* Password Input */}
@@ -90,11 +139,18 @@ const Profile = () => {
           id='password'
           placeholder='Password'
           className='bg-slate-100 rounded-lg p-3'
+          onChange={handleInputChange}
         />
 
         {/* Submit Button */}
         <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
-          Update
+          {loading ? <RotatingLines
+                            strokeColor="black"
+                            strokeWidth="5"
+                            animationDuration="0.75"
+                            width="36"
+                            visible={true}
+                        /> : 'Update'}
         </button>
 
       </form>
@@ -114,6 +170,11 @@ const Profile = () => {
 
       </div>
 
+      <p className='text-red-700 mt-5'>{error && 'Something went wrong!'}</p>
+
+      <p className='text-green-700 mt-5'>
+        {updateSuccess && 'User is updated successfully!'}
+      </p>
     </div>
   );
 }

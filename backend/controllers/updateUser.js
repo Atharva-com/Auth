@@ -1,11 +1,21 @@
 const User = require("../models/Users");
 const bcryptjs = require("bcryptjs");
-const { errorHandler } =  require('../utils/error.js');
-
+const { errorHandler } = require('../utils/error.js');
+const jwt = require('jsonwebtoken');
 // update user
 
 const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id) {
+  const token = req.body.token;
+
+  if (!token) return next(errorHandler(500, 'token not available'));
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return next(errorHandler(401, 'Unauthorized'));
+
+    VerifiedUser = user;
+  });
+  
+  if (VerifiedUser.id !== req.params.id) {
     return next(errorHandler(401, 'You can update only your account!'));
   }
   try {
