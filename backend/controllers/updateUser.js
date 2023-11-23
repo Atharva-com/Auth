@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 // update user
 
 const updateUser = async (req, res, next) => {
+  
   const token = req.body.token;
 
   if (!token) return next(errorHandler(500, 'token not available'));
@@ -38,8 +39,36 @@ const updateUser = async (req, res, next) => {
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
   } catch (error) {
-    next(errorHandler(401, error));
+    next(error);
   }
 };
 
-module.exports = { updateUser };
+const deleteUser = async (req, res, next) => { 
+
+  // const token = req.body.token;
+
+  // if (!token) return next(errorHandler(500, 'token not available'));
+
+  // jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  //   if (err) return next(errorHandler(401, 'Unauthorized'));
+
+  //   VerifiedUser = user;
+  // });
+  
+  // if (VerifiedUser.id !== req.params.id) {
+  //   return next(errorHandler(401, 'You can update only your account!'));
+  // }
+  
+  try {
+
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json('User has been deleted...');
+    
+  } catch (error) {
+    next(error);
+  }
+
+ }
+
+
+module.exports = { updateUser, deleteUser };

@@ -7,6 +7,9 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
 } from '../../redux/user/userSlice';
 import { RotatingLines } from 'react-loader-spinner';
 const Profile = () => {
@@ -54,11 +57,10 @@ const Profile = () => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
-
+  
   // On form submit
-
-  const handleSubmit = async (e) => { 
-    const token = localStorage.getItem('access_token')
+  const handleSubmit = async (e) => {
+    const token = localStorage.getItem('access_Token')
     e.preventDefault()
     const dataWithToken = {
       ...formData, // Add form data to the data
@@ -86,7 +88,28 @@ const Profile = () => {
     } catch (error) {
       dispatch(updateUserFailure(error));
     }
-    
+
+  }
+
+  // Delete account
+  const handleDeleteAccount = async () => { 
+
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`http://localhost:8000/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      console.log(data)
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteUserFailure(error));
+    }
+
    }
 
   return (
@@ -102,7 +125,7 @@ const Profile = () => {
 
         {/* Avatar Image */}
         <img
-          src={formData.profilePicture || currentUser.user.profilePicture}
+          src={formData.profilePicture || currentUser.profilePicture}
           alt='profile'
           className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2'
           onClick={() => fileRef.current.click()}
@@ -115,17 +138,17 @@ const Profile = () => {
 
         {/* Username Input */}
         <input
-          defaultValue={currentUser.user.username}
+          defaultValue={currentUser.username}
           type='text'
           id='username'
           placeholder='Username'
           className='bg-slate-100 rounded-lg p-3'
           onChange={handleInputChange}
         />
-        
+
         {/* Email Input */}
         <input
-          defaultValue={currentUser.user.email}
+          defaultValue={currentUser.email}
           type='email'
           id='email'
           placeholder='Email'
@@ -145,12 +168,12 @@ const Profile = () => {
         {/* Submit Button */}
         <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>
           {loading ? <RotatingLines
-                            strokeColor="black"
-                            strokeWidth="5"
-                            animationDuration="0.75"
-                            width="36"
-                            visible={true}
-                        /> : 'Update'}
+            strokeColor="black"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="36"
+            visible={true}
+          /> : 'Update'}
         </button>
 
       </form>
@@ -160,6 +183,7 @@ const Profile = () => {
 
         <span
           className='text-red-700 cursor-pointer'
+          onClick={handleDeleteAccount}
         >
           Delete Account
         </span>
