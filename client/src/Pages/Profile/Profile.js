@@ -10,6 +10,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signOut
 } from '../../redux/user/userSlice';
 import { RotatingLines } from 'react-loader-spinner';
 const Profile = () => {
@@ -27,6 +28,8 @@ const Profile = () => {
       handleFileUpload(image)
     }
   }, [image])
+
+  console.log(currentUser)
 
   // Upload image to firebase storage
 
@@ -71,7 +74,7 @@ const Profile = () => {
 
       // Dispatch update user start
       dispatch(updateUserStart());
-      const res = await fetch(`http://localhost:8000/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`http://localhost:8000/api/user/update/${currentUser.user._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,6 +115,19 @@ const Profile = () => {
 
    }
 
+  //  Sign out
+  const handleSignOut = () => {
+
+    try {
+
+      localStorage.removeItem('access_Token')
+      dispatch(signOut())
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -125,7 +141,7 @@ const Profile = () => {
 
         {/* Avatar Image */}
         <img
-          src={formData.profilePicture || currentUser.profilePicture}
+          src={formData.profilePicture || currentUser.user.profilePicture}
           alt='profile'
           className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2'
           onClick={() => fileRef.current.click()}
@@ -138,7 +154,7 @@ const Profile = () => {
 
         {/* Username Input */}
         <input
-          defaultValue={currentUser.username}
+          defaultValue={currentUser.user.username}
           type='text'
           id='username'
           placeholder='Username'
@@ -148,7 +164,7 @@ const Profile = () => {
 
         {/* Email Input */}
         <input
-          defaultValue={currentUser.email}
+          defaultValue={currentUser.user.email}
           type='email'
           id='email'
           placeholder='Email'
@@ -188,7 +204,7 @@ const Profile = () => {
           Delete Account
         </span>
 
-        <span className='text-red-700 cursor-pointer'>
+        <span className='text-red-700 cursor-pointer' onClick={handleSignOut}>
           Sign out
         </span>
 

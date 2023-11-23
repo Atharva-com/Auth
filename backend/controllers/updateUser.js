@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // update user
 
 const updateUser = async (req, res, next) => {
-  
+  console.log(req.body)
   const token = req.body.token;
 
   if (!token) return next(errorHandler(500, 'token not available'));
