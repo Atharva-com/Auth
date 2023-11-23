@@ -8,7 +8,7 @@ const Modal = ({
   children
 }) => {
   return (
-    <Dialog.Root open={isOpen} defaultOpen={isOpen} onOpenChange={onChange} className='relative z-100'>
+    <Dialog.Root open={isOpen} defaultOpen={isOpen} className='relative z-100'>
       
       <Dialog.Portal>
 
@@ -21,7 +21,7 @@ const Modal = ({
 
             {children}
 
-          <Dialog.Close asChild>
+          {/* <Dialog.Close asChild> */}
 
             {/* <button
               className="text-purple-900 hover:text-purple-800 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:outline-none" aria-label="Close"
@@ -29,7 +29,7 @@ const Modal = ({
               <IoMdClose />
             </button> */}
 
-          </Dialog.Close>
+          {/* </Dialog.Close> */}
 
         </Dialog.Content>
 
